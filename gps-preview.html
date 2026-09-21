@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Management - GPS Tracking Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gps-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .location-item {
+            transition: all 0.3s ease;
+        }
+        .location-item:hover {
+            transform: translateX(5px);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-green-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-leaf text-2xl"></i>
+                <h1 class="text-2xl font-bold">Farm Management System</h1>
+            </div>
+            <nav class="flex space-x-6">
+                <a href="#" class="hover:text-green-200">Home</a>
+                <a href="#" class="hover:text-green-200">Todo List</a>
+                <a href="#" class="bg-green-700 px-3 py-1 rounded">GPS Tracking</a>
+                <a href="#" class="hover:text-green-200">Marketplace</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- GPS Tracking Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">GPS Tracking</h1>
+            <p class="text-gray-600">Track your location and manage check-ins/check-outs for your todos.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Current Location Card -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold flex items-center">
+                            <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                            Current Location
+                        </h2>
+                        <span class="pulse">
+                            <i class="fas fa-circle text-green-500 text-xs"></i>
+                            <span class="text-sm text-gray-600 ml-1">Live</span>
+                        </span>
+                    </div>
+
+                    <!-- Location Display -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-sm font-medium text-gray-600">Coordinates:</span>
+                                <p class="text-lg font-mono">12.9716°, 77.5946°</p>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-gray-600">Address:</span>
+                                <p class="text-sm">Bangalore, Karnataka, India</p>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-gray-600">Accuracy:</span>
+                                <p class="text-sm text-green-600">Excellent (5.2m)</p>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-gray-600">Last Updated:</span>
+                                <p class="text-sm">2 minutes ago</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Control Buttons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-location-arrow mr-2"></i>
+                            Get Current Location
+                        </button>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-play mr-2"></i>
+                            Start Tracking
+                        </button>
+                        <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+                            <i class="fas fa-stop mr-2"></i>
+                            Stop Tracking
+                        </button>
+                    </div>
+
+                    <!-- Todo Check-in/Check-out -->
+                    <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                        <h3 class="font-medium text-blue-900 mb-2">Todo: "Irrigate Field A"</h3>
+                        <div class="flex gap-2">
+                            <button class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                Check In
+                            </button>
+                            <button class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                                <i class="fas fa-clock mr-1"></i>
+                                Check Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location History -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-history text-blue-500 mr-2"></i>
+                        Recent Locations
+                    </h2>
+
+                    <div class="space-y-3">
+                        <div class="location-item border-l-4 border-green-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">check_in</span>
+                                    <p class="font-mono text-sm mt-1">12.9716°, 77.5946°</p>
+                                    <p class="text-sm text-gray-600">Field A - North Section</p>
+                                </div>
+                                <span class="text-xs text-gray-500">10:30 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="location-item border-l-4 border-blue-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">current</span>
+                                    <p class="font-mono text-sm mt-1">12.9728°, 77.5930°</p>
+                                    <p class="text-sm text-gray-600">Farm Equipment Shed</p>
+                                </div>
+                                <span class="text-xs text-gray-500">10:15 AM</span>
+                            </div>
+                        </div>
+
+                        <div class="location-item border-l-4 border-orange-500 pl-4 py-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">check_out</span>
+                                    <p class="font-mono text-sm mt-1">12.9705°, 77.5955°</p>
+                                    <p class="text-sm text-gray-600">Field B - South Section</p>
+                                </div>
+                                <span class="text-xs text-gray-500">9:45 AM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        <i class="fas fa-refresh mr-1"></i>
+                        Refresh History
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Sidebar -->
+            <div class="space-y-6">
+                <!-- Location Statistics -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                        Location Statistics
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-purple-50 rounded-lg">
+                            <div class="text-2xl font-bold text-purple-600">24</div>
+                            <div class="text-sm text-gray-600">Total Records</div>
+                        </div>
+                        <div class="text-center p-4 bg-blue-50 rounded-lg">
+                            <div class="text-2xl font-bold text-blue-600">8</div>
+                            <div class="text-sm text-gray-600">Last 24 Hours</div>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <div class="text-2xl font-bold text-green-600">15</div>
+                            <div class="text-sm text-gray-600">Last 7 Days</div>
+                        </div>
+                        <div class="text-center p-4 bg-orange-50 rounded-lg">
+                            <div class="text-2xl font-bold text-orange-600">6</div>
+                            <div class="text-sm text-gray-600">Unique Todos</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                        Quick Actions
+                    </h2>
+
+                    <div class="space-y-3">
+                        <button class="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-left">
+                            <i class="fas fa-map mr-2"></i>
+                            View Location Map
+                        </button>
+                        <button class="w-full bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition text-left">
+                            <i class="fas fa-download mr-2"></i>
+                            Export Location Data
+                        </button>
+                        <button class="w-full bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition text-left">
+                            <i class="fas fa-cog mr-2"></i>
+                            GPS Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GPS Status -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-satellite text-green-500 mr-2"></i>
+                        GPS Status
+                    </h2>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Signal Strength:</span>
+                            <span class="text-sm font-medium text-green-600">Strong</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Satellites:</span>
+                            <span class="text-sm font-medium">12</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Tracking Status:</span>
+                            <span class="text-sm font-medium text-green-600">Active</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-600">Battery:</span>
+                            <span class="text-sm font-medium text-yellow-600">78%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6 mt-12">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Farm Management System. GPS Tracking Module.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Simulate GPS functionality
+        let isTracking = false;
+        let trackingInterval;
+
+        function simulateLocationUpdate() {
+            const locations = [
+                { lat: 12.9716, lng: 77.5946, address: "Field A - North Section" },
+                { lat: 12.9728, lng: 77.5930, address: "Farm Equipment Shed" },
+                { lat: 12.9705, lng: 77.5955, address: "Field B - South Section" }
+            ];
+            
+            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+            console.log('Location updated:', randomLocation);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    console.log('Button clicked:', text);
+                    
+                    if (text.includes('Start Tracking')) {
+                        isTracking = true;
+                        this.textContent = ' Stop Tracking';
+                        this.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        this.classList.add('bg-red-600', 'hover:bg-red-700');
+                        trackingInterval = setInterval(simulateLocationUpdate, 5000);
+                    } else if (text.includes('Stop Tracking')) {
+                        isTracking = false;
+                        this.textContent = ' Start Tracking';
+                        this.classList.remove('bg-red-600', 'hover:bg-red-700');
+                        this.classList.add('bg-green-600', 'hover:bg-green-700');
+                        clearInterval(trackingInterval);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

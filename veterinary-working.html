@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Veterinary Doctors - Farm Animal Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; }
+        .header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 1.5rem 0; position: sticky; top: 0; z-index: 1000; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 700; color: #2c3e50; }
+        .logo i { color: #27ae60; font-size: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .map-section { background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; margin-bottom: 2rem; height: 500px; position: relative; }
+        .map-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0); background-size: 20px 20px; background-position: 0 0, 10px 10px; }
+        .map-content { text-align: center; }
+        .map-icon { font-size: 4rem; color: #3498db; margin-bottom: 1rem; }
+        .map-title { font-size: 1.5rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; }
+        .map-subtitle { color: #7f8c8d; margin-bottom: 1.5rem; }
+        .location-info { position: absolute; top: 1rem; left: 1rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); padding: 1rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 200px; }
+        .location-status { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-weight: 600; color: #27ae60; }
+        .location-coords { font-size: 0.85rem; color: #666; font-family: 'Courier New', monospace; }
+        .filter-section { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+        .filter-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; color: #2c3e50; display: flex; align-items: center; gap: 0.5rem; }
+        .filter-title i { color: #3498db; }
+        .filter-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .filter-group label { font-weight: 500; color: #555; margin-bottom: 0.25rem; }
+        .filter-group select { padding: 0.75rem; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 1rem; transition: all 0.3s ease; }
+        .filter-group select:focus { outline: none; border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
+        .search-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem; }
+        .search-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: white; text-align: center; }
+        .clinics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+        .clinic-card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .clinic-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #27ae60, #3498db, #9b59b6); }
+        .clinic-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.15); }
+        .clinic-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .clinic-info { flex: 1; }
+        .clinic-name { font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem; }
+        .clinic-specialty { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .clinic-rating { display: flex; align-items: center; gap: 0.5rem; }
+        .stars { color: #f39c12; }
+        .rating-text { color: #666; font-size: 0.9rem; }
+        .verified-badge { background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; }
+        .clinic-details { margin-bottom: 1.5rem; }
+        .detail-item { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; color: #555; }
+        .detail-item i { color: #3498db; width: 20px; text-align: center; }
+        .detail-text { flex: 1; }
+        .distance-badge { background: #e74c3c; color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .timing-info { background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+        .timing-label { font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .timing-label i { color: #f39c12; }
+        .timing-text { color: #555; font-size: 0.9rem; }
+        .clinic-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .action-btn { flex: 1; min-width: 120px; padding: 0.75rem 1rem; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none; }
+        .btn-directions { background: #3498db; color: white; }
+        .btn-directions:hover { background: #2980b9; }
+        .btn-phone { background: #27ae60; color: white; }
+        .btn-phone:hover { background: #229954; }
+        .btn-email { background: #9b59b6; color: white; }
+        .btn-email:hover { background: #8e44ad; }
+        .loading { text-align: center; padding: 3rem; color: white; }
+        .loading-spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .error-message { background: #e74c3c; color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin: 2rem 0; }
+        .error-message i { font-size: 3rem; margin-bottom: 1rem; }
+        .error-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .error-text { margin-bottom: 1rem; }
+        .retry-btn { background: white; color: #e74c3c; border: 2px solid white; padding: 0.75rem 2rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .retry-btn:hover { background: #f8f9fa; }
+        .no-results { background: white; padding: 3rem; border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .no-results i { font-size: 4rem; color: #bdc3c7; margin-bottom: 1rem; }
+        .no-results-title { font-size: 1.5rem; font-weight: 600; color: #2c3e50; margin-bottom: 1rem; }
+        .no-results-text { color: #7f8c8d; margin-bottom: 1.5rem; }
+        .tips { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; text-align: left; }
+        .tips h4 { color: #2c3e50; margin-bottom: 1rem; }
+        .tips ul { list-style: none; }
+        .tips li { padding: 0.5rem 0; color: #555; display: flex; align-items: flex-start; gap: 0.5rem; }
+        .tips li i { color: #3498db; width: 20px; }
+        @media (max-width: 768px) { .header-content { flex-direction: column; gap: 1rem; text-align: center; } .container { padding: 1rem; } .filter-controls { grid-template-columns: 1fr; } .clinics-grid { grid-template-columns: 1fr; } .clinic-actions { flex-direction: column; } .action-btn { width: 100%; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <span>Nearby Veterinary Doctors</span>
+            </div>
+            <div class="location-status" id="location-status">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Detecting location...</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Map Section -->
+        <section class="map-section">
+            <div class="map-placeholder">
+                <div class="map-content">
+                    <i class="fas fa-map-marked-alt map-icon"></i>
+                    <h2 class="map-title">Interactive Map View</h2>
+                    <p class="map-subtitle">Your location and nearby veterinary clinics</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="getUserLocation()" class="search-btn">
+                            <i class="fas fa-location-arrow"></i>
+                            Get My Location
+                        </button>
+                        <button onclick="showAllClinics()" class="search-btn">
+                            <i class="fas fa-hospital"></i>
+                            Show All Clinics
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="location-info">
+                <div class="location-status">
+                    <i class="fas fa-check-circle"></i>
+                    Your Location
+                </div>
+                <div class="location-coords" id="coordinates">
+                    Lat: -- | Lng: --
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Section -->
+        <section class="filter-section">
+            <h2 class="filter-title">
+                <i class="fas fa-filter"></i>
+                Filter Veterinary Services
+            </h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="animal-type">Animal Type</label>
+                    <select id="animal-type">
+                        <option value="">All Animals</option>
+                        <option value="cattle">🐄 Cattle</option>
+                        <option value="poultry">🐔 Poultry</option>
+                        <option value="goats">🐐 Goats</option>
+                        <option value="sheep">🐑 Sheep</option>
+                        <option value="pigs">🐷 Pigs</option>
+                        <option value="horses">🐴 Horses</option>
+                        <option value="buffalo">🐃 Buffalo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="search-radius">Search Radius</label>
+                    <select id="search-radius">
+                        <option value="5">5 km</option>
+                        <option value="10" selected>10 km</option>
+                        <option value="20">20 km</option>
+                        <option value="50">50 km</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="search-btn" onclick="searchVeterinarians()">
+                        <i class="fas fa-search"></i>
+                        Search Vets
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clinics Section -->
+        <section class="clinics-section">
+            <h2 class="section-title">Nearby Veterinary Clinics</h2>
+            <div id="clinics-grid" class="clinics-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        let userLocation;
+        const veterinarians = [
+            {
+                id: 1,
+                name: "Dr. Ramesh Kumar",
+                specialty: "Large Animal Veterinarian",
+                clinic: "City Veterinary Hospital",
+                address: "123 Veterinary Road, Bangalore, Karnataka 560001",
+                phone: "+91-9876543210",
+                email: "ramesh.vet@example.com",
+                rating: 4.8,
+                reviews: 156,
+                distance: 2.3,
+                openingHours: "Mon-Sat: 9:00 AM - 6:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Cattle", "Buffalo", "Goat", "Sheep", "Poultry"],
+                verified: true
+            },
+            {
+                id: 2,
+                name: "Dr. Priya Sharma",
+                specialty: "Poultry Specialist",
+                clinic: "Rural Poultry Care Center",
+                address: "456 Poultry Farm Road, Hosur, Karnataka 562101",
+                phone: "+91-9876543211",
+                email: "priya.vet@example.com",
+                rating: 4.6,
+                reviews: 89,
+                distance: 3.1,
+                openingHours: "Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Poultry", "Ducks", "Turkeys", "Quails"],
+                verified: true
+            },
+            {
+                id: 3,
+                name: "Dr. Amit Patel",
+                specialty: "Cattle Specialist",
+                clinic: "Mobile Veterinary Services",
+                address: "789 Farm Road, Bangalore Rural, Karnataka 562103",
+                phone: "+91-9876543212",
+                email: "amit.vet@example.com",
+                rating: 4.9,
+                reviews: 203,
+                distance: 4.5,
+                openingHours: "24/7 Emergency Service Available",
+                emergency: true,
+                animals: ["Cattle", "Buffalo", "Goat", "Sheep", "Camels"],
+                verified: true
+            },
+            {
+                id: 4,
+                name: "Dr. Sarah Williams",
+                specialty: "Mixed Animal Veterinarian",
+                clinic: "Comprehensive Animal Care",
+                address: "101 Village Road, Bangalore Rural, Karnataka 562104",
+                phone: "+91-9876543213",
+                email: "sarah.vet@example.com",
+                rating: 4.7,
+                reviews: 67,
+                distance: 5.2,
+                openingHours: "Mon-Sat: 9:00 AM - 6:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Goat", "Sheep", "Poultry", "Ducks", "Rabbits", "Pigs"],
+                verified: true
+            },
+            {
+                id: 5,
+                name: "Dr. Michael Johnson",
+                specialty: "Large Animal Surgeon",
+                clinic: "Advanced Veterinary Surgery Center",
+                address: "555 Medical Complex, Bangalore, Karnataka 560099",
+                phone: "+91-9876543214",
+                email: "michael.vet@example.com",
+                rating: 4.9,
+                reviews: 178,
+                distance: 6.8,
+                openingHours: "Mon-Sat: 8:00 AM - 7:00 PM, Sun: 10:00 AM - 4:00 PM",
+                emergency: true,
+                animals: ["Cattle", "Horses", "Buffalo", "Goat", "Sheep"],
+                verified: true
+            },
+            {
+                id: 6,
+                name: "Dr. Anita Desai",
+                specialty: "Poultry Health Expert",
+                clinic: "Poultry Wellness Center",
+                address: "777 Farm Estate, Bangalore Rural, Karnataka 562105",
+                phone: "+91-9876543215",
+                email: "anita.vet@example.com",
+                rating: 4.5,
+                reviews: 94,
+                distance: 7.3,
+                openingHours: "Mon-Fri: 7:00 AM - 6:00 PM, Sat: 8:00 AM - 1:00 PM, Sun: Closed",
+                emergency: false,
+                animals: ["Poultry", "Ducks", "Turkeys", "Quails"],
+                verified: true
+            }
+        ];
+
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    document.getElementById('coordinates').textContent = 
+                        `Lat: ${userLocation.lat.toFixed(6)} | Lng: ${userLocation.lng.toFixed(6)}`;
+                    document.getElementById('location-status').innerHTML = 
+                        '<i class="fas fa-check-circle"></i> Location detected';
+                    
+                    alert('Location detected! Searching for nearby veterinarians...');
+                    searchVeterinarians();
+                },
+                (error) => {
+                    let message = 'Unable to get your location.';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'Location access denied. Please enable location permissions.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'Location request timed out.';
+                            break;
+                    }
+                    alert(message);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        function showAllClinics() {
+            searchVeterinarians();
+        }
+
+        function searchVeterinarians() {
+            const animalType = document.getElementById('animal-type').value;
+            const radius = parseInt(document.getElementById('search-radius').value);
+
+            let filtered = veterinarians.filter(vet => {
+                if (animalType && vet.animals) {
+                    return vet.animals.some(animal => 
+                        animal.toLowerCase().includes(animalType.toLowerCase())
+                    );
+                }
+                return true;
+            });
+
+            filtered = filtered.filter(vet => vet.distance <= radius);
+            filtered.sort((a, b) => a.distance - b.distance);
+
+            displayVeterinarians(filtered);
+        }
+
+        function displayVeterinarians(vets) {
+            const grid = document.getElementById('clinics-grid');
+            grid.innerHTML = '';
+
+            if (vets.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-results" style="grid-column: 1 / -1;">
+                        <i class="fas fa-search"></i>
+                        <h3 class="no-results-title">No Veterinary Clinics Found</h3>
+                        <p class="no-results-text">We couldn't find any veterinary clinics within your search radius. Try expanding your search radius or check your location settings.</p>
+                        <div class="tips">
+                            <h4>Tips for better results:</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Enable location permissions in your browser</li>
+                                <li><i class="fas fa-check"></i> Try a larger search radius (20-50 km)</li>
+                                <li><i class="fas fa-check"></i> Check if you're in a rural area with limited services</li>
+                                <li><i class="fas fa-check"></i> Ensure your internet connection is stable</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            vets.forEach(vet => {
+                const card = createClinicCard(vet);
+                grid.appendChild(card);
+            });
+        }
+
+        function createClinicCard(vet) {
+            const card = document.createElement('div');
+            card.className = 'clinic-card';
+            
+            const stars = '★'.repeat(Math.floor(vet.rating)) + 
+                         (vet.rating % 1 >= 0.5 ? '☆' : '');
+            
+            card.innerHTML = `
+                <div class="clinic-header">
+                    <div class="clinic-info">
+                        <h3 class="clinic-name">${vet.name}</h3>
+                        <p class="clinic-specialty">${vet.specialty}</p>
+                        <div class="clinic-rating">
+                            <span class="stars">${stars}</span>
+                            <span class="rating-text">${vet.rating} (${vet.reviews} reviews)</span>
+                        </div>
+                    </div>
+                    ${vet.verified ? '<div class="verified-badge"><i class="fas fa-check"></i> Verified</div>' : ''}
+                </div>
+                
+                <div class="clinic-details">
+                    <div class="detail-item">
+                        <i class="fas fa-hospital"></i>
+                        <span class="detail-text"><strong>${vet.clinic}</strong></span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="detail-text">${vet.address}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span class="detail-text">${vet.phone}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="detail-text">${vet.email}</span>
+                    </div>
+                    <div class="distance-badge">
+                        <i class="fas fa-route"></i>
+                        ${vet.distance.toFixed(1)} km away
+                    </div>
+                    
+                    <div class="timing-info">
+                        <div class="timing-label">
+                            <i class="fas fa-clock"></i>
+                            Opening Hours
+                        </div>
+                        <div class="timing-text">${vet.openingHours}</div>
+                    </div>
+                </div>
+                
+                <div class="clinic-actions">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(vet.address)}" target="_blank" class="action-btn btn-directions">
+                        <i class="fas fa-directions"></i>
+                        Directions
+                    </a>
+                    <a href="tel:${vet.phone}" class="action-btn btn-phone">
+                        <i class="fas fa-phone"></i>
+                        Call
+                    </a>
+                    <a href="mailto:${vet.email}" class="action-btn btn-email">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </a>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            searchVeterinarians();
+        });
+    </script>
+</body>
+</html>

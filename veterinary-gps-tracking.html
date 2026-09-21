@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Veterinary Doctors - Farm Animal Care</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Header Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .logo i {
+            color: #27ae60;
+            font-size: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            height: 500px;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .location-info {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            min-width: 200px;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .location-coords {
+            font-size: 0.85rem;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .filter-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-title i {
+            color: #3498db;
+        }
+
+        .filter-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 0.25rem;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Clinics Section */
+        .clinics-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .clinics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Clinic Card */
+        .clinic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clinic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #27ae60, #3498db, #9b59b6);
+        }
+
+        .clinic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .clinic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .clinic-info {
+            flex: 1;
+        }
+
+        .clinic-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .clinic-specialty {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .clinic-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stars {
+            color: #f39c12;
+        }
+
+        .rating-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .verified-badge {
+            background: #27ae60;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .clinic-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: #555;
+        }
+
+        .detail-item i {
+            color: #3498db;
+            width: 20px;
+            text-align: center;
+        }
+
+        .detail-text {
+            flex: 1;
+        }
+
+        .distance-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timing-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .timing-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timing-label i {
+            color: #f39c12;
+        }
+
+        .timing-text {
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .clinic-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-directions {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-directions:hover {
+            background: #2980b9;
+        }
+
+        .btn-phone {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-phone:hover {
+            background: #229954;
+        }
+
+        .btn-email {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .btn-email:hover {
+            background: #8e44ad;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: white;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .error-message i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-text {
+            margin-bottom: 1rem;
+        }
+
+        .retry-btn {
+            background: white;
+            color: #e74c3c;
+            border: 2px solid white;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:hover {
+            background: #f8f9fa;
+        }
+
+        /* No Results State */
+        .no-results {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-results i {
+            font-size: 4rem;
+            color: #bdc3c7;
+            margin-bottom: 1rem;
+        }
+
+        .no-results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .no-results-text {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+        }
+
+        .tips {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .tips h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .tips ul {
+            list-style: none;
+        }
+
+        .tips li {
+            padding: 0.5rem 0;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .tips li i {
+            color: #3498db;
+            width: 20px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .filter-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .clinics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .clinic-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <span>Nearby Veterinary Doctors</span>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-map-marker-alt"></i>
+                <span id="location-status">Detecting location...</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Finding nearby veterinary doctors...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-message" class="error-message" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3 class="error-title">Location Access Required</h3>
+            <p class="error-text">We need your location to find nearby veterinary doctors. Please enable location access in your browser.</p>
+            <button class="retry-btn" onclick="retryGetLocation()">
+                <i class="fas fa-redo"></i> Try Again
+            </button>
+        </div>
+
+        <!-- Map Section -->
+        <section id="map-section" class="map-section" style="display: none;">
+            <div id="map"></div>
+            <div class="location-info">
+                <div class="location-status">
+                    <i class="fas fa-check-circle"></i>
+                    Your Location
+                </div>
+                <div class="location-coords" id="coordinates">
+                    Lat: -- | Lng: --
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Section -->
+        <section id="filter-section" class="filter-section" style="display: none;">
+            <h2 class="filter-title">
+                <i class="fas fa-filter"></i>
+                Filter Veterinary Services
+            </h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="animal-type">Animal Type</label>
+                    <select id="animal-type">
+                        <option value="">All Animals</option>
+                        <option value="cattle">🐄 Cattle</option>
+                        <option value="poultry">🐔 Poultry</option>
+                        <option value="goats">🐐 Goats</option>
+                        <option value="sheep">🐑 Sheep</option>
+                        <option value="pigs">🐷 Pigs</option>
+                        <option value="horses">🐴 Horses</option>
+                        <option value="buffalo">🐃 Buffalo</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="search-radius">Search Radius</label>
+                    <select id="search-radius">
+                        <option value="5">5 km</option>
+                        <option value="10" selected>10 km</option>
+                        <option value="20">20 km</option>
+                        <option value="50">50 km</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="search-btn" onclick="searchVeterinarians()">
+                        <i class="fas fa-search"></i>
+                        Search Vets
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clinics Section -->
+        <section id="clinics-section" class="clinics-section" style="display: none;">
+            <h2 class="section-title">Nearby Veterinary Clinics</h2>
+            <div id="clinics-grid" class="clinics-grid">
+                <!-- Clinic cards will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- No Results State -->
+        <div id="no-results" class="no-results" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3 class="no-results-title">No Veterinary Clinics Found</h3>
+            <p class="no-results-text">We couldn't find any veterinary clinics within your search radius. Try expanding your search radius or check your location settings.</p>
+            <div class="tips">
+                <h4>Tips for better results:</h4>
+                <ul>
+                    <li><i class="fas fa-check"></i> Enable location permissions in your browser</li>
+                    <li><i class="fas fa-check"></i> Try a larger search radius (20-50 km)</li>
+                    <li><i class="fas fa-check"></i> Check if you're in a rural area with limited services</li>
+                    <li><i class="fas fa-check"></i> Ensure your internet connection is stable</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Google Maps JavaScript API -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&callback=initMap&libraries=places">
+    </script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // Global variables
+        let map;
+        let userLocation;
+        let markers = [];
+        let infoWindow;
+        let veterinarians = [];
+
+        // Demo veterinary data (in real app, this would come from API)
+        const demoVeterinarians = [
+            {
+                id: 1,
+                name: "Dr. Ramesh Kumar",
+                specialty: "Large Animal Veterinarian",
+                clinic: "City Veterinary Hospital",
+                address: "123 Veterinary Road, Bangalore, Karnataka 560001",
+                phone: "+91-9876543210",
+                email: "ramesh.vet@example.com",
+                rating: 4.8,
+                reviews: 156,
+                distance: 2.3,
+                lat: 12.9716,
+                lng: 77.5946,
+                openingHours: "Mon-Sat: 9:00 AM - 6:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Cattle", "Buffalo", "Goat", "Sheep", "Poultry"],
+                verified: true
+            },
+            {
+                id: 2,
+                name: "Dr. Priya Sharma",
+                specialty: "Poultry Specialist",
+                clinic: "Rural Poultry Care Center",
+                address: "456 Poultry Farm Road, Hosur, Karnataka 562101",
+                phone: "+91-9876543211",
+                email: "priya.vet@example.com",
+                rating: 4.6,
+                reviews: 89,
+                distance: 3.1,
+                lat: 12.9695,
+                lng: 77.5930,
+                openingHours: "Mon-Fri: 8:00 AM - 5:00 PM, Sat: 9:00 AM - 2:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Poultry", "Ducks", "Turkeys", "Quails"],
+                verified: true
+            },
+            {
+                id: 3,
+                name: "Dr. Amit Patel",
+                specialty: "Cattle Specialist",
+                clinic: "Mobile Veterinary Services",
+                address: "789 Farm Road, Bangalore Rural, Karnataka 562103",
+                phone: "+91-9876543212",
+                email: "amit.vet@example.com",
+                rating: 4.9,
+                reviews: 203,
+                distance: 4.5,
+                lat: 12.9705,
+                lng: 77.5965,
+                openingHours: "24/7 Emergency Service Available",
+                emergency: true,
+                animals: ["Cattle", "Buffalo", "Goat", "Sheep", "Camels"],
+                verified: true
+            },
+            {
+                id: 4,
+                name: "Dr. Sarah Williams",
+                specialty: "Mixed Animal Veterinarian",
+                clinic: "Comprehensive Animal Care",
+                address: "101 Village Road, Bangalore Rural, Karnataka 562104",
+                phone: "+91-9876543213",
+                email: "sarah.vet@example.com",
+                rating: 4.7,
+                reviews: 67,
+                distance: 5.2,
+                lat: 12.9695,
+                lng: 77.5965,
+                openingHours: "Mon-Sat: 9:00 AM - 6:00 PM, Sun: Closed",
+                emergency: true,
+                animals: ["Goat", "Sheep", "Poultry", "Ducks", "Rabbits", "Pigs"],
+                verified: true
+            }
+        ];
+
+        // Initialize Google Maps
+        function initMap() {
+            // Check if API key is set
+            if (typeof google === 'undefined') {
+                showError('Google Maps API key is not configured. Please add your API key.');
+                return;
+            }
+
+            // Create map centered on Bangalore (default location)
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 12.9716, lng: 77.5946 },
+                zoom: 12,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
+            });
+
+            // Create info window
+            infoWindow = new google.maps.InfoWindow();
+
+            // Get user location
+            getUserLocation();
+        }
+
+        // Get user's current location
+        function getUserLocation() {
+            showLoading();
+
+            if (!navigator.geolocation) {
+                showError('Geolocation is not supported by your browser.');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    hideLoading();
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    updateLocationDisplay(userLocation);
+                    centerMapOnUser();
+                    searchNearbyVeterinarians();
+                },
+                (error) => {
+                    hideLoading();
+                    handleLocationError(error);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Handle location errors
+        function handleLocationError(error) {
+            let message = 'Unable to get your location.';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message = 'Location access denied. Please enable location permissions in your browser settings.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message = 'Location information is unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    message = 'Location request timed out.';
+                    break;
+                case error.UNKNOWN_ERROR:
+                    message = 'An unknown error occurred.';
+                    break;
+            }
+            
+            showError(message);
+        }
+
+        // Update location display
+        function updateLocationDisplay(location) {
+            document.getElementById('coordinates').textContent = 
+                `Lat: ${location.lat.toFixed(6)} | Lng: ${location.lng.toFixed(6)}`;
+            document.getElementById('location-status').textContent = 'Location detected';
+        }
+
+        // Center map on user location
+        function centerMapOnUser() {
+            if (map && userLocation) {
+                map.setCenter(userLocation);
+                map.setZoom(14);
+
+                // Add user location marker
+                new google.maps.Marker({
+                    position: userLocation,
+                    map: map,
+                    title: 'Your Location',
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        scale: 8,
+                        fillColor: '#27ae60',
+                        fillOpacity: 0.8,
+                        strokeColor: '#fff',
+                        strokeWeight: 2
+                    }
+                });
+            }
+        }
+
+        // Search nearby veterinarians
+        function searchNearbyVeterinarians() {
+            const animalType = document.getElementById('animal-type').value;
+            const radius = parseInt(document.getElementById('search-radius').value);
+
+            // Filter veterinarians based on animal type
+            veterinarians = demoVeterinarians.filter(vet => {
+                if (animalType && vet.animals) {
+                    return vet.animals.some(animal => 
+                        animal.toLowerCase().includes(animal.toLowerCase())
+                    );
+                }
+                return true;
+            });
+
+            // Calculate distances (simplified - in real app, use actual distance calculation)
+            if (userLocation) {
+                veterinarians = veterinarians.map(vet => ({
+                    ...vet,
+                    distance: calculateDistance(userLocation, vet)
+                }));
+            }
+
+            // Filter by radius
+            veterinarians = veterinarians.filter(vet => vet.distance <= radius);
+
+            // Sort by distance
+            veterinarians.sort((a, b) => a.distance - b.distance);
+
+            displayVeterinarians();
+        }
+
+        // Calculate distance between two points (simplified)
+        function calculateDistance(point1, point2) {
+            const R = 6371; // Earth's radius in km
+            const dLat = (point2.lat - point1.lat) * Math.PI / 180;
+            const dLon = (point2.lng - point1.lng) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(point1.lat * Math.PI / 180) * Math.cos(point2.lat * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // Display veterinarians
+        function displayVeterinarians() {
+            hideLoading();
+            
+            if (veterinarians.length === 0) {
+                showNoResults();
+                return;
+            }
+
+            hideNoResults();
+            showSections();
+            addMarkersToMap();
+            renderClinicCards();
+        }
+
+        // Add markers to map
+        function addMarkersToMap() {
+            // Clear existing markers
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            veterinarians.forEach(vet => {
+                const marker = new google.maps.Marker({
+                    position: { lat: vet.lat, lng: vet.lng },
+                    map: map,
+                    title: vet.name,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="16" cy="16" r="12" fill="#27ae60" stroke="#fff" stroke-width="2"/>
+                                <text x="16" y="20" text-anchor="middle" fill="white" font-size="12" font-weight="bold">🐄</text>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(32, 32),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(16, 16)
+                    }
+                });
+
+                // Create info window content
+                const infoContent = `
+                    <div style="padding: 10px; max-width: 250px;">
+                        <h3 style="margin: 0 0 10px 0; color: #2c3e50;">${vet.name}</h3>
+                        <p style="margin: 5px 0; color: #666;">${vet.specialty}</p>
+                        <p style="margin: 5px 0; color: #666;">${vet.address}</p>
+                        <p style="margin: 5px 0;"><strong>Distance:</strong> ${vet.distance.toFixed(1)} km</p>
+                        <div style="margin-top: 10px;">
+                            <button onclick="getDirections(${vet.lat}, ${vet.lng})" style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-directions"></i> Directions
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                marker.addListener('click', () => {
+                    infoWindow.setContent(infoContent);
+                    infoWindow.open(map, marker);
+                });
+
+                markers.push(marker);
+            });
+        }
+
+        // Render clinic cards
+        function renderClinicCards() {
+            const clinicsGrid = document.getElementById('clinics-grid');
+            clinicsGrid.innerHTML = '';
+
+            veterinarians.forEach(vet => {
+                const card = createClinicCard(vet);
+                clinicsGrid.appendChild(card);
+            });
+        }
+
+        // Create clinic card element
+        function createClinicCard(vet) {
+            const card = document.createElement('div');
+            card.className = 'clinic-card';
+            
+            const stars = '★'.repeat(Math.floor(vet.rating)) + 
+                         (vet.rating % 1 >= 0.5 ? '☆' : '');
+            
+            card.innerHTML = `
+                <div class="clinic-header">
+                    <div class="clinic-info">
+                        <h3 class="clinic-name">${vet.name}</h3>
+                        <p class="clinic-specialty">${vet.specialty}</p>
+                        <div class="clinic-rating">
+                            <span class="stars">${stars}</span>
+                            <span class="rating-text">${vet.rating} (${vet.reviews} reviews)</span>
+                        </div>
+                    </div>
+                    ${vet.verified ? '<div class="verified-badge"><i class="fas fa-check"></i> Verified</div>' : ''}
+                </div>
+                
+                <div class="clinic-details">
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span class="detail-text">${vet.address}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone"></i>
+                        <span class="detail-text">${vet.phone}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="detail-text">${vet.email}</span>
+                    </div>
+                    <div class="distance-badge">
+                        <i class="fas fa-route"></i>
+                        ${vet.distance.toFixed(1)} km away
+                    </div>
+                    
+                    <div class="timing-info">
+                        <div class="timing-label">
+                            <i class="fas fa-clock"></i>
+                            Opening Hours
+                        </div>
+                        <div class="timing-text">${vet.openingHours}</div>
+                    </div>
+                </div>
+                
+                <div class="clinic-actions">
+                    <button class="action-btn btn-directions" onclick="getDirections(${vet.lat}, ${vet.lng})">
+                        <i class="fas fa-directions"></i>
+                        Directions
+                    </button>
+                    <button class="action-btn btn-phone" onclick="callVeterinarian('${vet.phone}')">
+                        <i class="fas fa-phone"></i>
+                        Call
+                    </button>
+                    <button class="action-btn btn-email" onclick="emailVeterinarian('${vet.email}')">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Get directions to veterinarian
+        function getDirections(lat, lng) {
+            const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+            window.open(url, '_blank');
+        }
+
+        // Call veterinarian
+        function callVeterinarian(phone) {
+            window.open(`tel:${phone}`, '_blank');
+        }
+
+        // Email veterinarian
+        function emailVeterinarian(email) {
+            window.open(`mailto:${email}`, '_blank');
+        }
+
+        // UI State Management
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('no-results').style.display = 'none';
+            hideSections();
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            hideLoading();
+            document.getElementById('error-message').style.display = 'block';
+            document.querySelector('.error-text').textContent = message;
+            hideSections();
+        }
+
+        function showNoResults() {
+            document.getElementById('no-results').style.display = 'block';
+            hideSections();
+        }
+
+        function hideNoResults() {
+            document.getElementById('no-results').style.display = 'none';
+        }
+
+        function showSections() {
+            document.getElementById('map-section').style.display = 'block';
+            document.getElementById('filter-section').style.display = 'block';
+            document.getElementById('clinics-section').style.display = 'block';
+        }
+
+        function hideSections() {
+            document.getElementById('map-section').style.display = 'none';
+            document.getElementById('filter-section').style.display = 'none';
+            document.getElementById('clinics-section').style.display = 'none';
+        }
+
+        // Retry getting location
+        function retryGetLocation() {
+            getUserLocation();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show loading state initially
+            showLoading();
+        });
+    </script>
+</body>
+</html>

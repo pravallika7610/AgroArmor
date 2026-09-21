@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veterinary GPS Tracking - Working Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .map-section, .filter-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .map-placeholder {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .map-icon {
+            font-size: 4rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .vets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .vet-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #27ae60;
+        }
+
+        .vet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .vet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .vet-avatar {
+            width: 60px;
+            height: 60px;
+            background: #e8f5e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .vet-info h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .vet-info p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .vet-details {
+            margin-bottom: 15px;
+        }
+
+        .vet-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .vet-detail span:first-child {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .distance-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .vet-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .btn-directions {
+            background: #3498db;
+        }
+
+        .btn-call {
+            background: #27ae60;
+        }
+
+        .btn-email {
+            background: #9b59b6;
+        }
+
+        .location-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .location-info h4 {
+            color: #27ae60;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .coordinates {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .status-badge {
+            background: #27ae60;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .vets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🐄</span>
+                Veterinary GPS Tracking
+            </h1>
+            <p>Find specialized veterinarians for your farm animals</p>
+            <div class="status-badge">
+                <span>✅</span>
+                <span id="vet-count">12 Veterinarians Available</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="map-section">
+                <h2 class="section-title">
+                    <span>🗺️</span>
+                    Live Map View
+                </h2>
+                
+                <div class="location-info" id="location-info" style="display: none;">
+                    <h4>
+                        <span>📍</span>
+                        Your Location
+                    </h4>
+                    <div class="coordinates" id="coordinates">
+                        Detecting location...
+                    </div>
+                </div>
+
+                <div class="map-placeholder">
+                    <div class="map-icon">🗺️</div>
+                    <h3>Interactive Map</h3>
+                    <p>Click "Get My Location" to enable GPS</p>
+                </div>
+
+                <button class="btn" onclick="getLocation()">
+                    <span>📍</span>
+                    <span id="location-btn-text">Get My Location</span>
+                </button>
+            </div>
+
+            <div class="filter-section">
+                <h2 class="section-title">
+                    <span>🔍</span>
+                    Filter Options
+                </h2>
+
+                <div class="form-group">
+                    <label for="animal-type">Animal Type</label>
+                    <select id="animal-type" onchange="filterVets()">
+                        <option value="">🐾 All Animal Types</option>
+                        <option value="cattle">🐄 Cattle</option>
+                        <option value="poultry">🐔 Poultry</option>
+                        <option value="goats">🐐 Goats</option>
+                        <option value="sheep">🐑 Sheep</option>
+                        <option value="pigs">🐷 Pigs</option>
+                        <option value="horses">🐴 Horses</option>
+                        <option value="buffalo">🐃 Buffalo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="search-radius">Search Radius</label>
+                    <select id="search-radius" onchange="filterVets()">
+                        <option value="5">5 km</option>
+                        <option value="10" selected>10 km</option>
+                        <option value="20">20 km</option>
+                        <option value="30">30 km</option>
+                        <option value="50">50 km</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="filterVets()" style="width: 100%;">
+                    <span>🔍</span>
+                    Search Veterinarians
+                </button>
+            </div>
+        </div>
+
+        <div class="vets-grid" id="vets-grid">
+            <!-- Veterinarian cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // All veterinarian data
+        const veterinarians = [
+            {
+                id: 1,
+                name: 'Dr. Ramesh Kumar',
+                specialty: 'Large Animal Veterinarian',
+                qualification: 'BVSc, MVSc, PhD',
+                clinic: 'City Veterinary Hospital',
+                address: '123 Veterinary Road, Bangalore, Karnataka 560001',
+                phone: '+91-9876543210',
+                email: 'ramesh.vet@example.com',
+                rating: 4.8,
+                reviews: 156,
+                distance: 2.3,
+                animals: ['Cattle', 'Buffalo', 'Goat', 'Sheep', 'Poultry', 'Pigs', 'Horses'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 2,
+                name: 'Dr. Priya Sharma',
+                specialty: 'Poultry Specialist',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Rural Poultry Care Center',
+                address: '456 Poultry Farm Road, Hosur, Karnataka 562101',
+                phone: '+91-9876543211',
+                email: 'priya.vet@example.com',
+                rating: 4.6,
+                reviews: 89,
+                distance: 3.1,
+                animals: ['Poultry', 'Ducks', 'Turkeys', 'Quails'],
+                avatar: '👩‍⚕️'
+            },
+            {
+                id: 3,
+                name: 'Dr. Amit Patel',
+                specialty: 'Cattle Specialist',
+                qualification: 'BVSc, MVSc, PhD',
+                clinic: 'Mobile Veterinary Services',
+                address: '789 Farm Road, Bangalore Rural, Karnataka 562103',
+                phone: '+91-9876543212',
+                email: 'amit.vet@example.com',
+                rating: 4.9,
+                reviews: 203,
+                distance: 4.5,
+                animals: ['Cattle', 'Buffalo', 'Goat', 'Sheep', 'Camels'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 4,
+                name: 'Dr. Sarah Williams',
+                specialty: 'Mixed Animal Veterinarian',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Comprehensive Animal Care',
+                address: '101 Village Road, Bangalore Rural, Karnataka 562104',
+                phone: '+91-9876543213',
+                email: 'sarah.vet@example.com',
+                rating: 4.7,
+                reviews: 67,
+                distance: 7.8,
+                animals: ['Goat', 'Sheep', 'Poultry', 'Ducks', 'Rabbits', 'Pigs'],
+                avatar: '👩‍⚕️'
+            },
+            {
+                id: 5,
+                name: 'Dr. Michael Johnson',
+                specialty: 'Large Animal Surgeon',
+                qualification: 'BVSc, MVSc, PhD',
+                clinic: 'Advanced Veterinary Surgery Center',
+                address: '555 Medical Complex, Bangalore, Karnataka 560099',
+                phone: '+91-9876543214',
+                email: 'michael.vet@example.com',
+                rating: 4.9,
+                reviews: 178,
+                distance: 8.2,
+                animals: ['Cattle', 'Horses', 'Buffalo', 'Goat', 'Sheep'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 6,
+                name: 'Dr. Anita Desai',
+                specialty: 'Poultry Health Expert',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Poultry Wellness Center',
+                address: '777 Farm Estate, Bangalore Rural, Karnataka 562105',
+                phone: '+91-9876543215',
+                email: 'anita.vet@example.com',
+                rating: 4.5,
+                reviews: 94,
+                distance: 12.5,
+                animals: ['Poultry', 'Ducks', 'Turkeys', 'Quails'],
+                avatar: '👩‍⚕️'
+            },
+            {
+                id: 7,
+                name: 'Dr. Rajesh Kumar',
+                specialty: 'Goat and Sheep Specialist',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Small Ruminant Care Center',
+                address: '888 Grazing Fields, Hosur, Karnataka 562106',
+                phone: '+91-9876543216',
+                email: 'rajesh.vet@example.com',
+                rating: 4.4,
+                reviews: 112,
+                distance: 15.3,
+                animals: ['Goat', 'Sheep', 'Rabbits'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 8,
+                name: 'Dr. Lakshmi Narayan',
+                specialty: 'Buffalo Specialist',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Buffalo Health Center',
+                address: '999 Dairy Farm Road, Bangalore Rural, Karnataka 562107',
+                phone: '+91-9876543217',
+                email: 'lakshmi.vet@example.com',
+                rating: 4.6,
+                reviews: 145,
+                distance: 18.7,
+                animals: ['Buffalo', 'Cattle', 'Goat'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 9,
+                name: 'Dr. Suresh Babu',
+                specialty: 'Pig Health Specialist',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Swine Care Clinic',
+                address: '111 Piggery Road, Hosur, Karnataka 562108',
+                phone: '+91-9876543218',
+                email: 'suresh.vet@example.com',
+                rating: 4.3,
+                reviews: 78,
+                distance: 22.1,
+                animals: ['Pigs', 'Goat', 'Sheep'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 10,
+                name: 'Dr. Meera Reddy',
+                specialty: 'Equine Veterinarian',
+                qualification: 'BVSc, MVSc, PhD',
+                clinic: 'Equine Medical Center',
+                address: '222 Horse Farm Avenue, Bangalore Rural, Karnataka 562109',
+                phone: '+91-9876543219',
+                email: 'meera.vet@example.com',
+                rating: 4.7,
+                reviews: 89,
+                distance: 25.4,
+                animals: ['Horses', 'Cattle', 'Goat'],
+                avatar: '👩‍⚕️'
+            },
+            {
+                id: 11,
+                name: 'Dr. Prakash Sharma',
+                specialty: 'General Farm Animal Vet',
+                qualification: 'BVSc',
+                clinic: 'Rural Veterinary Clinic',
+                address: '333 Village Center, Hosur, Karnataka 562110',
+                phone: '+91-9876543220',
+                email: 'prakash.vet@example.com',
+                rating: 4.2,
+                reviews: 156,
+                distance: 31.2,
+                animals: ['Cattle', 'Buffalo', 'Goat', 'Sheep', 'Poultry'],
+                avatar: '👨‍⚕️'
+            },
+            {
+                id: 12,
+                name: 'Dr. Anjali Patel',
+                specialty: 'Camel and Exotic Animals',
+                qualification: 'BVSc, MVSc',
+                clinic: 'Exotic Animal Care',
+                address: '444 Safari Road, Bangalore Rural, Karnataka 562111',
+                phone: '+91-9876543221',
+                email: 'anjali.vet@example.com',
+                rating: 4.8,
+                reviews: 45,
+                distance: 38.9,
+                animals: ['Camels', 'Horses', 'Goat', 'Sheep'],
+                avatar: '👩‍⚕️'
+            }
+        ];
+
+        let currentLocation = null;
+        let filteredVets = [...veterinarians];
+
+        // Initialize the page
+        function init() {
+            displayVets(veterinarians);
+        }
+
+        // Get user location
+        function getLocation() {
+            const btn = document.getElementById('location-btn-text');
+            const locationInfo = document.getElementById('location-info');
+            const coordinates = document.getElementById('coordinates');
+            
+            btn.textContent = 'Getting location...';
+            
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser.');
+                btn.textContent = 'Get My Location';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    coordinates.textContent = `Lat: ${currentLocation.lat.toFixed(6)}, Lng: ${currentLocation.lng.toFixed(6)}`;
+                    locationInfo.style.display = 'block';
+                    btn.textContent = 'Location Found!';
+                    
+                    alert(`Location obtained! Lat: ${currentLocation.lat.toFixed(6)}, Lng: ${currentLocation.lng.toFixed(6)}`);
+                },
+                (error) => {
+                    let errorMessage = 'Failed to get your location.';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location permission denied. Please enable location access in your browser settings.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out.';
+                            break;
+                    }
+                    alert(errorMessage);
+                    btn.textContent = 'Get My Location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Filter veterinarians
+        function filterVets() {
+            const animalType = document.getElementById('animal-type').value;
+            const radius = parseInt(document.getElementById('search-radius').value);
+            
+            let filtered = [...veterinarians];
+            
+            // Filter by animal type
+            if (animalType) {
+                filtered = filtered.filter(vet => 
+                    vet.animals.some(animal => 
+                        animal.toLowerCase().includes(animalType.toLowerCase())
+                    )
+                );
+            }
+            
+            // Filter by distance
+            filtered = filtered.filter(vet => vet.distance <= radius);
+            
+            // Sort by distance
+            filtered.sort((a, b) => a.distance - b.distance);
+            
+            filteredVets = filtered;
+            displayVets(filtered);
+            
+            // Update count
+            document.getElementById('vet-count').textContent = `${filtered.length} Veterinarians Available`;
+            
+            // Show message
+            if (filtered.length === 0) {
+                alert(`No veterinarians found within ${radius}km${animalType ? ` for ${animalType}` : ''}`);
+            } else {
+                alert(`Showing ${filtered.length} veterinarians within ${radius}km${animalType ? ` for ${animalType}` : ''}`);
+            }
+        }
+
+        // Display veterinarians
+        function displayVets(vets) {
+            const grid = document.getElementById('vets-grid');
+            grid.innerHTML = '';
+            
+            vets.forEach(vet => {
+                const card = createVetCard(vet);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create veterinarian card
+        function createVetCard(vet) {
+            const card = document.createElement('div');
+            card.className = 'vet-card';
+            
+            const stars = '★'.repeat(Math.floor(vet.rating)) + 
+                         (vet.rating % 1 >= 0.5 ? '☆' : '');
+            
+            card.innerHTML = `
+                <div class="vet-header">
+                    <div class="vet-avatar">${vet.avatar}</div>
+                    <div class="vet-info">
+                        <h3>${vet.name}</h3>
+                        <p>${vet.specialty}</p>
+                    </div>
+                </div>
+                
+                <div class="vet-details">
+                    <div class="vet-detail">
+                        <span>🏥</span>
+                        <span>${vet.clinic}</span>
+                    </div>
+                    <div class="vet-detail">
+                        <span>📍</span>
+                        <span>${vet.address}</span>
+                    </div>
+                    <div class="vet-detail">
+                        <span>📞</span>
+                        <span>${vet.phone}</span>
+                    </div>
+                    <div class="vet-detail">
+                        <span>⭐</span>
+                        <span>${vet.rating} (${vet.reviews} reviews)</span>
+                    </div>
+                </div>
+                
+                <div class="distance-badge">
+                    📍 ${vet.distance.toFixed(1)} km away
+                </div>
+                
+                <div class="vet-actions">
+                    <button class="btn btn-small btn-directions" onclick="getDirections('${vet.address}')">
+                        🗺️ Directions
+                    </button>
+                    <button class="btn btn-small btn-call" onclick="callVet('${vet.phone}')">
+                        📞 Call
+                    </button>
+                    <button class="btn btn-small btn-email" onclick="emailVet('${vet.email}')">
+                        ✉️ Email
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Action functions
+        function getDirections(address) {
+            const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+            window.open(url, '_blank');
+        }
+
+        function callVet(phone) {
+            window.open(`tel:${phone}`, '_blank');
+        }
+
+        function emailVet(email) {
+            window.open(`mailto:${email}`, '_blank');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
